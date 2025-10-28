@@ -1,7 +1,7 @@
 # Airflow + Airbyte + dbt on KIND (Helm)
 
-**Author:** Liya Rejis Joseph
-**Purpose:** Example project to orchestrate Airbyte (CDC), Apache Airflow, and dbt on a local KIND (Kubernetes in Docker) cluster using Helm.
+**Author:** Liya Rejis Joseph. 
+**Purpose:** Automated data pipeline framework with Airbyte (EL), dbt (T), and Airflow (orchestration) running locally via KIND.
 
 ## Features
 - Airbyte (CDC-enabled) for ELT ingestion
