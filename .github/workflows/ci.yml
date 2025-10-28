@@ -1,0 +1,58 @@
+name: CI Pipeline - Airflow + Airbyte + dbt
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint:
+    name: Lint Python DAGs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install Pylint
+        run: pip install pylint
+
+      - name: Run lint on DAGs
+        run: |
+          echo "🔍 Linting DAGs..."
+          pylint --disable=R,C,W,E --score=no dags/*.py || true
+
+  build-images:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+    needs: lint
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & Push Airflow image
+        run: |
+          echo "🐳 Building Airflow image..."
+          docker build -f docker/airflow.Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/airflow-airbyte:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/airflow-airbyte:latest
+
+      - name: Build & Push dbt image
+        run: |
+          echo "📦 Building dbt image..."
+          docker build -f docker/dbt.Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/dbt-local:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/dbt-local:latest

@@ -1,0 +1,7 @@
+# add dependencies. these will get pulled during the `dbt deps` process.
+
+packages:
+  - package: dbt-labs/dbt_utils
+    version: 0.9.5
+  - package: MaterializeInc/materialize_dbt_utils
+    version: 0.7.0

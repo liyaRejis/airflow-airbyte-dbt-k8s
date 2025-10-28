@@ -1,0 +1,47 @@
+name: test_report
+version: '1.0.0'
+config-version: 2
+profile: normalize
+model-paths:
+- models
+docs-paths:
+- docs
+analysis-paths:
+- analysis
+test-paths:
+- tests
+seed-paths:
+- data
+macro-paths:
+- macros
+target-path: ../build
+log-path: ../logs
+packages-install-path: ../dbt
+clean-targets:
+- build
+- dbt_modules
+quoting:
+  database: true
+  schema: false
+  identifier: true
+models:
+  test_report:
+    +materialized: table 
+    hr:
+      +tages: hr
+      +materialized: incremental
+      +on_schema_change: sync_all_columns
+    staff:
+      +tages: staff
+      +materialized: incremental
+      +on_schema_change: sync_all_columns
+    views:
+        +tages: views
+        +materialized: view
+
+dispatch:
+- macro_namespace: dbt_utils
+  search_order:
+  - materialize_dbt_utils
+  - test_report
+  - dbt_utils

@@ -1,0 +1,28 @@
+images:
+  airflow:
+    repository: airflow
+    tag: 3.0.2-airbyte
+    pullPolicy: IfNotPresent
+
+apiServer:
+  service:
+    type: NodePort
+    ports:
+      - name: api-server
+        port: 8080
+        targetPort: api-server
+        nodePort: 30808
+
+# ------------------------------
+# PVC for DAGs
+# ------------------------------
+volumes:
+  - name: dags
+    persistentVolumeClaim:
+      claimName: airflow-dags-pvc
+volumeMounts:
+  - name: dags
+    mountPath: /opt/airflow/dags
+
+
+# helm upgrade --install airflow apache-airflow/airflow -n airflow -f airflow-values.yaml

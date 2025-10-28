@@ -1,0 +1,10 @@
+image:
+  tag: "1.8.3"
+db:
+  persistence:
+    enabled: true
+    size: 10Gi
+
+
+# helm upgrade --install airbyte airbyte/airbyte -n airbyte -f airbyte-values.yaml
+# kubectl patch svc airbyte-airbyte-server-svc -n airbyte -p '{"spec":{"type":"NodePort","ports":[{"port":8001,"nodePort":31764,"targetPort":"http","protocol":"TCP","name":"http"}]}}'
