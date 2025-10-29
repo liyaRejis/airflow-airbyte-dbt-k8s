@@ -20,9 +20,4 @@ SELECT
     "_ab_cdc_updated_at"::TIMESTAMP AS _ab_cdc_updated_at 
 FROM {{source('public','Employee')}}  
 WHERE 1 = 1
-{% if is_incremental() %}
-AND (
-    "_ab_cdc_updated_at"::TIMESTAMP > (SELECT MAX("_ab_cdc_updated_at"::TIMESTAMP) FROM {{ this }})
-    OR "_ab_cdc_deleted_at"::TIMESTAMP > COALESCE((SELECT MAX("_ab_cdc_deleted_at"::TIMESTAMP) FROM {{ this }}), 'epoch'::TIMESTAMP)
-)
-{% endif %}
+{{ incremental_filter('_ab_cdc_updated_at', '_ab_cdc_deleted_at') }}

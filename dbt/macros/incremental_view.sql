@@ -10,3 +10,17 @@
         )
     {% endif %}
 {% endmacro %}
+
+{% macro incremental_filter(updated_col="_ab_cdc_updated_at", deleted_col="_ab_cdc_deleted_at") %}
+    {% if is_incremental() %}
+        AND (
+            {{ updated_col }}::timestamp > (
+                SELECT MAX({{ updated_col }}::timestamp) FROM {{ this }}
+            )
+            OR {{ deleted_col }}::timestamp > COALESCE(
+                (SELECT MAX({{ deleted_col }}::timestamp) FROM {{ this }}),
+                'epoch'::timestamp
+            )
+        )
+    {% endif %}
+{% endmacro %}
